@@ -8,31 +8,25 @@ import edu.princeton.cs.algs4.*;
 
 public class RandomizedQueue<Item> implements Iterable<Item> //item is a generic. Allows us to make randomized queues of any data type
 {
-	//private static final Item[] randomQueue = null;
-	//private static final Item[] randomQueue = null;
 	// Fields
-	//Queue<Item> randomQueue = new Queue<>();
-	//Item[] randomQueue;
 	private ArrayList<Item> randomQueue = new ArrayList<Item>();
 	int size;
 	
 	// Constructor
-//	public RandomizedQueue<Item>
-//	{
-//		size = 0;
-//	}
 	 public RandomizedQueue() // construct an empty randomized queue
 	 {
 		  ArrayList<Item> randomQueue = new ArrayList<Item>();
 	 }
-	   public boolean isEmpty()                 // is the queue empty?
-	   { 
-		   return (size == 0);
-	   }
-	   public int size()                        // return the number of items on the queue
-	   {
-		   return size;
-	   }
+	   
+	public boolean isEmpty()                 // is the queue empty?
+	{ 
+		return (size == 0);
+	}
+	public int size()                        // return the number of items on the queue
+	{
+		return size;
+	}
+	
 	   public void enqueue(Item item)           // add the item
 	   {
 		   if (item == null) {
