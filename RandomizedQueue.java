@@ -3,13 +3,15 @@ package a02;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import edu.princeton.cs.algs4.*;
 
 public class RandomizedQueue<Item> implements Iterable<Item> //item is a generic. Allows us to make randomized queues of any data type
 {
 	// Fields
-	private ArrayList<Item> randomQueue = new ArrayList<Item>();
+	// private ArrayList<Item> randomQueue = new ArrayList<Item>();
+	Item[] randomQueue;
 	int size;
 	
 	// Constructor
@@ -30,11 +32,11 @@ public class RandomizedQueue<Item> implements Iterable<Item> //item is a generic
 	   public void enqueue(Item item)           // add the item
 	   {
 		   if (item == null) {
-	            throw new NullPointerException("Can't enqueue null item");
+	            throw new NullPointerException("null item; try again");
 	        }
-	        this.randomQueue[size++] = item;
-	        if (size == this.randomQueue.length) {
-	            resize(2 * this.randomQueue.length);
+		        this.randomQueue[size++] = item;
+		        if (size == this.randomQueue.length) {
+		            resize(2 * this.randomQueue.length);
 	        }
 	        
 	        //swapping items in queue
@@ -48,7 +50,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> //item is a generic
 	   {
 		   if (size == 0) 
 		   {
-	            throw new NoSuchElementException("Can't dequeue, queue is empty");
+	            throw new NoSuchElementException("queue is null");
 	        }
 	        Item item = this.randomQueue[--size];
 	        if (size > 0 && size == this.randomQueue.length / 4) {
@@ -117,3 +119,4 @@ public class RandomizedQueue<Item> implements Iterable<Item> //item is a generic
 	        }
 	   }
 }
+
