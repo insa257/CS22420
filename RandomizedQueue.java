@@ -1,122 +1,143 @@
 package a02;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.NoSuchElementException;
-import edu.princeton.cs.algs4.*;
 
-public class RandomizedQueue<Item> implements Iterable<Item> //item is a generic. Allows us to make randomized queues of any data type
+import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
+
+public class RandomizedQueue<Item> implements Iterable<Item>
 {
-	// Fields
-	// private ArrayList<Item> randomQueue = new ArrayList<Item>();
-	Item[] randomQueue;
-	int size;
-	
-	// Constructor
-	 public RandomizedQueue() // construct an empty randomized queue
-	 {
-		  ArrayList<Item> randomQueue = new ArrayList<Item>();
-	 }
-	   
-	public boolean isEmpty()                 // is the queue empty?
-	{ 
+	private Item[] queue;
+	private int last;
+	private int size;
+
+	@SuppressWarnings("unchecked")
+	public RandomizedQueue()
+	{
+		queue = (Item[]) new Object[2];
+		size = 0;
+		last = 0;
+	}
+
+	public boolean isEmpty()
+	{
 		return (size == 0);
 	}
-	public int size()                        // return the number of items on the queue
+
+	public int size()
 	{
 		return size;
 	}
-	
-	   public void enqueue(Item item)           // add the item
-	   {
-		   if (item == null) {
-	            throw new NullPointerException("null item; try again");
-	        }
-		        this.randomQueue[size++] = item;
-		        if (size == this.randomQueue.length) {
-		            resize(2 * this.randomQueue.length);
-	        }
-	        
-	        //swapping items in queue
-	        int i = StdRandom.uniform(size);
-	        Item temp = randomQueue[i];
-	        randomQueue[i] = randomQueue[size - 1];
-	        randomQueue[size - 1] = temp;
-	    }
-	   
-	public Item dequeue()                    // delete and return a random item
-	   {
-		   if (size == 0) 
-		   {
-	            throw new NoSuchElementException("queue is null");
-	        }
-	        Item item = this.randomQueue[--size];
-	        if (size > 0 && size == this.randomQueue.length / 4) {
-	            resize(this.randomQueue.length / 2);
-	        }
-	        this.randomQueue[size] = null;
-	        return item;
-	   }
-	
-	   //create larger queue through copying contents
-	   private void resize(int qSize)
-	   {
-		   Item[] copy = (Item[]) new Object[qSize];
-	        for (int i = 0; i < size; i++)
-	            copy[i] = randomQueue[i];
-	        randomQueue = copy;
-	   }
-	public Item sample()                  // return (but do not delete) a random item
-	   {
-		   if (size == 0) 
-		   {
-	            throw new NoSuchElementException("Can't dequeue, queue is empty");
-	       }
-		   
-	        int i = StdRandom.uniform(size);
-	        return this.randomQueue[i];
-	   }
-	   
-	   public Iterator<Item> iterator() {
-	        return new randomIterator();
-	    }
 
-	    private class randomIterator implements Iterator<Item> 
-	    {
-	        private int i;
+	private void resize(int capacity)
+	{
+		assert capacity >= size;
+		Item[] temp = (Item[]) new Object[capacity];
+		for (int i = 0; i < size; i++)
+		{
+			temp[i] = queue[i];
+		}
+		queue = temp;
+	}
 
-	        public boolean hasNext() 
-	        {
-	            return randomQueue[i] != null;
-	        }
+	public void enqueue(Item item)
+	{
+		if (item == null)
+			throw new NullPointerException("The entry is null");
+		else
+		{
+			if (size == queue.length)
+				resize(2 * queue.length);
+			last = size;
+			queue[size++] = item;
+		}
+	}
 
-	        public void remove() 
-	        {
-	            throw new UnsupportedOperationException();
-	        }
+	public Item dequeue()
+	{
+		if (isEmpty())
+			throw new NoSuchElementException("The queue is empty");
+		int randomInt = StdRandom.uniform(size);
+		Item item = queue[randomInt];
+		if (randomInt == last)
+		{
+			queue[last] = null;
+			last--;
+			size--;
+		} 
+		else
+		{
+			queue[randomInt] = queue[last];
+			queue[last] = null;
+			last--;
+			size--;
+		}
 
-	        public Item next() 
-	        {
-	            if (!hasNext()) {
-	                throw new NoSuchElementException();
-	            } else {
-	                Item item = randomQueue[i++];
-	                return item;
-	            }
-	        }
-	    }
-	   public static void main(String[] args)   // unit testing
-	   {
-		   RandomizedQueue<String> rq = new RandomizedQueue<>();
-	        while (!StdIn.isEmpty()) {
-	            String s = StdIn.readString();
-	            if (s.equals("-"))
-	                StdOut.print(rq.dequeue());
-	            else
-	                rq.enqueue(s);
-	        }
-	   }
+		if (size > 0 && size == queue.length / 4)
+			resize(queue.length / 2);
+		return item;
+
+	}
+
+	public Item sample()
+	{
+		if (isEmpty())
+			throw new NoSuchElementException("The queue is empty");
+		int randomInt = StdRandom.uniform(size);
+		return queue[randomInt];
+	}
+
+	public Iterator<Item> iterator()
+	{
+		return new QueueIterator();
+	}
+
+	private class QueueIterator implements Iterator<Item>
+	{
+		private int i;
+
+		public QueueIterator()
+		{
+			i = size - 1;
+		}
+
+		@Override
+		public boolean hasNext()
+		{
+			return i >= 0;
+		}
+
+		public void remove()
+		{
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Item next()
+		{
+			if (!hasNext())
+				throw new NoSuchElementException();
+			return queue[i--];
+		}
+
+	}
+
+	public static void main(String[] args)
+	{
+		RandomizedQueue randomQ = new RandomizedQueue();
+		// for testing purposes
+
+		for (int i = 0; i < 20; i++)
+		{
+			randomQ.enqueue(i);
+		}
+		StdOut.println("Testing if output is random: ");
+		for (int j = 0; j < 20; j++)
+		{
+			int test = (int) randomQ.dequeue();
+			StdOut.print(test + " ");
+		}
+		
+	}
 }
-
