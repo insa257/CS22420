@@ -2,6 +2,7 @@ package a02;
 
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import edu.princeton.cs.algs4.*;
 
@@ -128,14 +129,27 @@ public class Dequeue<Item> implements Iterable<Item>
     // unit testing (required)
     public static void main(String[] args)
     {
-    	 Deque<String> deque = new Deque<>();
-         while (!StdIn.isEmpty()) 
-         {
-             String s = StdIn.readString();
-             if (s.equals("-"))
-                 StdOut.print(deque.removeLast());
-             else
-                 deque.addFirst(s);
-         }
+    	 //Deque<String> deque = new Deque<String>(); //? why is deque throwing an error
+    	Deque<String> deque = new LinkedList<String>();
+    	
+    	 StdOut.println("k = ");
+    	 int itrs = StdIn.readInt();
+    	 StdOut.print("input the strings: ");
+    	 for (int i = 0; i < itrs; i++)
+		{
+             while (!StdIn.isEmpty()) 
+             {
+                 String s = StdIn.readString();
+                 if (s.equals("-"))
+                     StdOut.print(deque.removeLast());
+                 else
+                     deque.addFirst(s);
+             }
+		}
+    	 for (String d : deque)
+		{
+    		 StdOut.print(d);
+		}
+    	 
     }
 }
