@@ -1,5 +1,4 @@
-/**
- * RandomizedQueue creates a random queue of iterable items.
+* RandomizedQueue creates a random queue of iterable items.
  * 
  * @author manyanair insanorcross
  * @version Summer 2022
@@ -16,7 +15,6 @@ import edu.princeton.cs.algs4.StdRandom;
 public class RandomizedQueue<Item> implements Iterable<Item>
 {
 	private Item[] queue;
-	private int last;
 	private int size;
 
 	@SuppressWarnings("unchecked")
@@ -24,7 +22,6 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 	{
 		queue = (Item[]) new Object[2];
 		size = 0;
-		last = 0;
 	}
 	
 	/**
@@ -48,20 +45,20 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 	}
 
 	/**
-	 * Increases the number of total slots in the queue to 'capacity.'
+	 * Changes the number of total slots in the queue to 'capacity.'
 	 * 
 	 * @param capacity - number of total slots in new queue
 	 */
 	private void resize(int capacity)
 	{
-		assert capacity >= size;
+		//assert capacity >= queue.length;
 		@SuppressWarnings("unchecked")
 		Item[] temp = (Item[]) new Object[capacity];
 		for (int i = 0; i < size; i++)
 		{
 			temp[i] = queue[i];
 		}
-		queue = temp;
+		queue = temp; 
 	}
 
 	/**
@@ -71,15 +68,16 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 	 */
 	public void enqueue(Item item)
 	{
+		// Handle edge case
 		if (item == null)
 			throw new NullPointerException("The entry is null");
-		else
-		{
-			if (size == queue.length)
-				resize(2 * queue.length);
-			last = size;
-			queue[size++] = item;
-		}
+
+		// Double queue if full
+		if (size == queue.length)
+			resize(2 * queue.length);
+		
+		// Add item to queue
+		queue[size++] = item;
 	}
 
 	/**
@@ -89,26 +87,24 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 	 */
 	public Item dequeue()
 	{
+		// Handle edge case
 		if (isEmpty())
 			throw new NoSuchElementException("The queue is empty");
+		
+		// Randomly remove an item in queue 
+		// and move last item into vacant spot
 		int randomInt = StdRandom.uniform(size);
 		Item item = queue[randomInt];
-		if (randomInt == last)
+		size--;
+		queue[randomInt] = queue[size];
+		queue[size] = null; // Avoid loitering
+		
+		// Decrease queue size if 1/4 full
+		if (queue.length > 4 && size < queue.length / 4)
 		{
-			queue[last] = null;
-			last--;
-			size--;
-		} 
-		else
-		{
-			queue[randomInt] = queue[last];
-			queue[last] = null;
-			last--;
-			size--;
-		}
-
-		if (size > 0 && size == queue.length / 4)
 			resize(queue.length / 2);
+		}
+		
 		return item;
 
 	}
@@ -123,8 +119,7 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 	{
 		if (isEmpty())
 			throw new NoSuchElementException("The queue is empty");
-		int randomInt = StdRandom.uniform(size);
-		return queue[randomInt];
+		return queue[StdRandom.uniform(0, size)];
 	}
 
 	/** 
@@ -171,7 +166,7 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 	// Testing RandomizedQueue:
 	public static void main(String[] args)
 	{
-		// Test if queue is empty after adding one and removing it
+		// Test if queue is empty after adding one item and removing it
 		RandomizedQueue<Integer> randomQ1 = new RandomizedQueue<Integer>();
 		randomQ1.enqueue(1);
 		randomQ1.dequeue();
