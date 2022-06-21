@@ -1,3 +1,10 @@
+/**
+ * RandomizedQueue creates a random queue of iterable items.
+ * 
+ * @author manyanair insanorcross
+ * @version Summer 2022
+ */
+
 package a02;
 
 import java.util.Iterator;
@@ -19,20 +26,36 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 		size = 0;
 		last = 0;
 	}
-
+	
+	/**
+	 * Checks the size to see if the queue is empty
+	 * 
+	 * @return if the queue is empty or not
+	 */
 	public boolean isEmpty()
 	{
 		return (size == 0);
 	}
 
+	/**
+	 * Returns the number of items in the queue.
+	 * 
+	 * @return size of queue
+	 */
 	public int size()
 	{
 		return size;
 	}
 
+	/**
+	 * Increases the number of total slots in the queue to 'capacity.'
+	 * 
+	 * @param capacity - number of total slots in new queue
+	 */
 	private void resize(int capacity)
 	{
 		assert capacity >= size;
+		@SuppressWarnings("unchecked")
 		Item[] temp = (Item[]) new Object[capacity];
 		for (int i = 0; i < size; i++)
 		{
@@ -41,6 +64,11 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 		queue = temp;
 	}
 
+	/**
+	 * Adds item to the queue.
+	 * 
+	 * @param item - to be added to queue
+	 */
 	public void enqueue(Item item)
 	{
 		if (item == null)
@@ -54,6 +82,11 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 		}
 	}
 
+	/**
+	 * Randomly selects an item from the queue to be removed.
+	 * 
+	 * @return item - that was removed
+	 */
 	public Item dequeue()
 	{
 		if (isEmpty())
@@ -80,6 +113,12 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 
 	}
 
+	/**
+	 * Randomly returns an item from the queue, 
+	 * but does not remove it from the queue.
+	 * 
+	 * @return item - randomly chosen from queue
+	 */
 	public Item sample()
 	{
 		if (isEmpty())
@@ -88,18 +127,24 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 		return queue[randomInt];
 	}
 
+	/** 
+	 * Creates new Iterator
+	 */
 	public Iterator<Item> iterator()
 	{
 		return new QueueIterator();
 	}
 
+	/**
+	 * Implements classes for Iterator interface
+	 */
 	private class QueueIterator implements Iterator<Item>
 	{
 		private int i;
 
 		public QueueIterator()
 		{
-			i = size - 1;
+			i = size--;
 		}
 
 		@Override
@@ -123,21 +168,31 @@ public class RandomizedQueue<Item> implements Iterable<Item>
 
 	}
 
+	// Testing RandomizedQueue:
 	public static void main(String[] args)
 	{
-		RandomizedQueue randomQ = new RandomizedQueue();
-		// for testing purposes
-
-		for (int i = 0; i < 20; i++)
+		// Test if queue is empty after adding one and removing it
+		RandomizedQueue<Integer> randomQ1 = new RandomizedQueue<Integer>();
+		randomQ1.enqueue(1);
+		randomQ1.dequeue();
+		StdOut.println(randomQ1.size());
+		StdOut.println(randomQ1.isEmpty());
+		StdOut.println();
+		
+		// Test if output is random
+		RandomizedQueue<Integer> randomQ2 = new RandomizedQueue<Integer>();
+		for (int i = 0; i < 10; i++)
 		{
-			randomQ.enqueue(i);
+			randomQ2.enqueue(i);
 		}
-		StdOut.println("Testing if output is random: ");
-		for (int j = 0; j < 20; j++)
+		for (int j = 0; j < 10; j++)
 		{
-			int test = (int) randomQ.dequeue();
+			int test = (int) randomQ2.dequeue();
 			StdOut.print(test + " ");
 		}
-		
+		StdOut.println();
+		StdOut.println(randomQ2.size());
+		StdOut.println(randomQ2.isEmpty());
+		StdOut.println();
 	}
 }
