@@ -1,233 +1,214 @@
 package a04;
 
-import edu.princeton.cs.algs4.StdRandom;
-import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.Stack;
-import java.util.Arrays;
+import edu.princeton.cs.algs4.LinkedQueue;
+import edu.princeton.cs.algs4.StdOut;
 
+// Models a board in the 8-puzzle game or its generalization.
 public class Board {
-    private final int n;
-    private final char[] blocks;
-    private int blankpos;
+    private int[][] blocks;
+    private int N;
+    private int hamming;
+    private int manhattan;
+    
+    
+    // Construct a board from an N-by-N array of tiles, where 
+    // tiles[i][j] = tile at row i and column j, and 0 represents the blank 
 
-    // first row = 1
-    private int row(int p) {
-        return (int) Math.ceil((double)p/(double)n);
-    }
-
-    // first column = 1
-    private int col(int p) {
-        if (p % n == 0) return n;
-        return p % n;
-    }
-
-    // construct a board from an n-by-n array of blocks
-    // (where blocks[i][j] = block in row i, column j)
-    // -for-loop int -> char
-    // -construct goal ???
     public Board(int[][] blocks) {
-        n = blocks.length;
-        this.blocks = new char[n*n];
-        int k = 0 ;
-        for (int i = 0; i < n; i++){
-            for (int j = 0; j < n; j++) {
-                this.blocks[k] = (char) blocks[i][j];
-                if (blocks[i][j] == 0) blankpos = k;
-                k ++;
+        this.N = blocks.length;
+        this.blocks = new int[N][N];
+        for (int i = 0; i < N; i++)
+            for (int j = 0; j < N; j++)
+                this.blocks[i][j] = blocks[i][j]; 
+        this.hamming = 0;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (this.blocks[i][j] == 0)
+                    continue;
+                if (this.blocks[i][j] != i * N + j + 1)
+                    this.hamming++;
+            }
+        }
+        this.manhattan = 0;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                //if not in position
+                if (blocks[i][j] != i * N + j + 1 && blocks[i][j] != 0) {
+                    int expi = (blocks[i][j] - 1) / N; //row gap
+                    int expj = (blocks[i][j] - 1) - (expi * N); //column gap
+                    this.manhattan += Math.abs(i - expi) + Math.abs(j - expj);
+                }
             }
         }
     }
 
-    // board dimension n
-    public int dimension() {
-        return n;
+    // Tile at row i and column j.
+    public int tileAt(int i, int j) {
+        return blocks[i][j];
+    }
+    
+    // Size of this board.
+    public int size() {
+        return N * N;
     }
 
-    // number of blocks out of place
-    // -count++ if blocks[i]!=corresponding char
+    // Number of tiles out of place.
     public int hamming() {
-        int hamming = 0;
-        for (int k = 0, ans = 1; k < n * n; k++, ans++) {
-            if (blocks[k] == 0) continue;
-            if (blocks[k] != ans) hamming++;
-        }
-        return hamming;
+        return this.hamming;
     }
 
-    // sum of Manhattan distances between blocks and goal
-    // -compare blocks[i].row to i.row & cks[i].col to i.col
+    // Sum of Manhattan distances between tiles and goal.
     public int manhattan() {
-        int manhattan = 0;
-        for (int k = 0; k < n*n; k++) {
-            if (blocks[k] == 0) continue;
-            int rowdiff = Math.abs(row(blocks[k]) - row(k+1));
-            int coldiff = Math.abs(col(blocks[k]) - col(k+1));
-            manhattan = manhattan + rowdiff + coldiff;
-        }
-        return manhattan;
+        return this.manhattan;
     }
 
-    // is this board the goal board?
-    // -compare bloacks[i+1] > [i]
+    // Is this board the goal board?
     public boolean isGoal() {
-        for (int k = 0 ; k < n * n - 2; k++) {
-            if (blocks[k] > blocks[k + 1]) return false;
-        }
-        return true;
+        return blankTile() == N * N && inversions() == 0;
     }
 
-    // a board that is obtained by exchanging any pair of blocks
-    // -randomly swap a pair of blocks
-    public Board twin() {
-        boolean swapSuccess = false;
-        char[] twin = blocks.clone();
-        // choose a non-blank block
-        int k = 0;
-        do {
-            k=StdRandom.uniform(n*n);
-        } while (blocks[k] == 0);
-        // choose an exchange direction
-        while (swapSuccess == false) {
-            int choice = StdRandom.uniform(4);
-            switch(choice) {
-                case 0 : //swapAbove
-                    if(row(k+1) == 1) swapSuccess = false;
-                    else if(twin[k-n] == 0) swapSuccess = false;
-                    else {
-                        swapAbove(twin,k);
-                        swapSuccess = true;
-                    }
-                    break;
-                case 1 : //swapBelow
-                    if(row(k+1) == n) swapSuccess = false;
-                    else if(twin[k+n] == 0) swapSuccess = false;
-                    else {
-                        swapBelow(twin,k);
-                        swapSuccess = true;
-                    }
-                    break;
-                case 2 : //swapLeft
-                    if(col(k+1) == 1) swapSuccess = false;
-                    else if(twin[k-1] == 0) swapSuccess = false;
-                    else {
-                        swapLeft(twin,k);
-                        swapSuccess = true;
-                    }
-                    break;
-                case 3 : //swapRight
-                    if(col(k+1) == n) swapSuccess = false;
-                    else if(twin[k+1] == 0) swapSuccess = false;
-                    else {
-                        swapRight(twin,k);
-                        swapSuccess = true;
-                    }
-                    break;
+    // Is this board solvable?
+    public boolean isSolvable() {
+        if (N % 2 != 0) {
+            if (inversions() % 2 == 0) { //if inversions even
+                return true;
+            }
+            return false;
+        }
+        else {
+            int sum = ((blankTile() - 1) / N) + inversions();
+            if (sum % 2 == 0) {
+                return false;
+            }
+                return true;
+        }
+    }
+
+    // Does this board equal that?
+    public boolean equals(Board that) {
+        if (this.N != that.N)
+            return false;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (this.blocks[i][j] != that.blocks[i][j])
+                    return false; //return false if not equal that
             }
         }
-        Board twinBoard = new Board(toTwoDarray(twin));
-        return twinBoard;
-    }
-
-    // does this board equal y?
-    public boolean equals(Object y) {
-        if (y == this) return true;
-        if (y == null) return false;
-        if (y.getClass() != this.getClass()) return false;
-        Board that = (Board) y;
-        if (!Arrays.equals(this.blocks, that.blocks)) return false;
         return true;
     }
 
-    // all neighboring boards
-    // -stack push item, return stack
+    // All neighboring boards.
     public Iterable<Board> neighbors() {
-        Stack<Board> stackNeighbors = new Stack<Board>();
-        char[] neighbor;
-        if(row(blankpos+1) != 1) {
-            neighbor = blocks.clone();
-            swapAbove(neighbor,blankpos);
-            Board neighborBoard = new Board(toTwoDarray(neighbor));
-            stackNeighbors.push(neighborBoard);
+        LinkedQueue<Board> q = new LinkedQueue<Board>();
+        int[][] neighbor;
+        int i = (blankTile() - 1) / N; //this is the row number
+        int j = (blankTile() - 1) % N; //this is the column number
+        int tempVal; //holds a temporary value
+        if (i - 1 >= 0 && i - 1 < N - 1) { //boundary for checking north
+            neighbor = cloneTiles(); //clone into neighbor array
+            tempVal = neighbor[i][j]; //swap neighbor[i][j] with neighbor[i - 1][j]
+            neighbor[i][j] = neighbor[i - 1][j];
+            neighbor[i - 1][j] = tempVal;
+            Board board = new Board(neighbor); //board object from clone
+            q.enqueue(board); //enqueue board into q
         }
-        if(row(blankpos+1) != n) {
-            neighbor = blocks.clone();
-            swapBelow(neighbor,blankpos);
-            Board neighborBoard = new Board(toTwoDarray(neighbor));
-            stackNeighbors.push(neighborBoard);
+        if (j + 1 > 0 && j + 1 < N) { //boundary for checking east
+            neighbor = cloneTiles(); //clone into neighbor array
+            tempVal = neighbor[i][j]; //swap neighbor[i][j] with neighbor[i][j + 1]
+            neighbor[i][j] = neighbor[i][j + 1];
+            neighbor[i][j + 1] = tempVal;
+            Board board = new Board(neighbor);
+            q.enqueue(board);
         }
-        if(col(blankpos+1) != 1) {
-            neighbor = blocks.clone();
-            swapLeft(neighbor,blankpos);
-            Board neighborBoard = new Board(toTwoDarray(neighbor));
-            stackNeighbors.push(neighborBoard);
+        if (i + 1 > 0 && i + 1 < N) { //boundary for checking south
+            neighbor = cloneTiles(); //clone into neighbor array
+            tempVal = neighbor[i][j]; //swap neighbor[i][j] with neighbor[i + 1][j]
+            neighbor[i][j] = neighbor[i + 1][j];
+            neighbor[i + 1][j] = tempVal;
+            Board board = new Board(neighbor); //board from object clone
+            q.enqueue(board); //enqueue board into q
         }
-        if(col(blankpos+1) != n) {
-            neighbor = blocks.clone();
-            swapRight(neighbor,blankpos);
-            Board neighborBoard = new Board(toTwoDarray(neighbor));
-            stackNeighbors.push(neighborBoard);
+        
+        if (j - 1 >= 0 && j - 1 < N - 1) { //boundary for checking west
+            neighbor = cloneTiles(); //clone into neighbor array
+            tempVal = neighbor[i][j]; //swap neighbor[i][j] with neighbor[i][j - 1]
+            neighbor[i][j] = neighbor[i][j - 1];
+            neighbor[i][j - 1] = tempVal;
+            Board board = new Board(neighbor);
+            q.enqueue(board);
         }
-        return stackNeighbors;
+        return q;
     }
 
-    // string representation of this board (in the output format specified below)
+    // String representation of this board.
     public String toString() {
-        StringBuilder s = new StringBuilder();
-        s.append(n + "\n");
-        int k = 0;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                s.append(String.format("%2d ", (int)blocks[k]));
-                k++;
+        //String s = "[" + N + "\n";
+    	String s = N + "\n";
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                s += String.format("%2d", blocks[i][j]);
+                if (j < N - 1) {
+                    s += " ";
+                }
             }
-            s.append("\n");
+            if (i < N - 1) {
+                s += "\n";
+            }
         }
-        return s.toString();
+        //s += "]";
+        return s;
     }
 
-    //swap functions
-    private void swapAbove(char[] oneDarray, int k) {
-        char temp = oneDarray[k];
-        oneDarray[k] = oneDarray[k - n];
-        oneDarray[k - n] = temp;
-    }
-    private void swapBelow(char[] oneDarray, int k) {
-        char temp = oneDarray[k];
-        oneDarray[k] = oneDarray[k + n];
-        oneDarray[k + n] = temp;
-    }
-    private void swapLeft(char[] oneDarray, int k) {
-        char temp = oneDarray[k];
-        oneDarray[k] = oneDarray[k - 1];
-        oneDarray[k - 1] = temp;
-    }
-    private void swapRight(char[] oneDarray, int k) {
-        char temp = oneDarray[k];
-        oneDarray[k] = oneDarray[k + 1];
-        oneDarray[k + 1] = temp;
-    }
-
-    private int[][] toTwoDarray(char[] oneDarray) {
-        int k = 0 ;
-        int[][] blocks = new int[n][n];
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++) {
-            blocks[i][j] = oneDarray[k];
-            k++;
+    // Helper method that returns the position (in row-major order) of the 
+    // blank (zero) tile.
+    private int blankTile() {
+        int k = 0;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                k++;
+                if (blocks[i][j] == 0) {
+                    return N * i + j + 1;
+                }
+            }
         }
-        return blocks;
+        return -1;
     }
 
-    // unit tests
-    public static void main(String[] args) {
-        // create initial board from file
-        In in = new In(args[0]);
-        int n = in.readInt();
-        int[][] blocks = new int[n][n];
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
-            blocks[i][j] = in.readInt();
-        Board initial = new Board(blocks);
+    // Helper method that returns the number of inversions.
+    private int inversions() {
+        int count = 0;
+        int p1 = 0;
+        int p2 = 0;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                p1++;
+                for (int k = 0; k < N; k++) {
+                    for (int l = 0; l < N; l++) {
+                        p2++;
+                        if (blocks[i][j] == 0 || blocks[k][l] == 0)
+                            continue;
+                        else if (p1 < p2 && blocks[i][j] > blocks[k][l]) {
+                            count++;
+                        }
+                    }
+                }
+                p2 = 0;
+            }
+        }
+        return count;
     }
+
+    // Helper method that clones the tiles[][] array in this board and 
+    // returns it.
+    private int[][] cloneTiles() {
+        int[][] s = new int[N][N];
+        for (int i = 0; i < N; i++)
+            for (int j = 0; j < N; j++)
+                s[i][j] = blocks[i][j];
+        return s;
+    }
+   public static void main(String[] args) { 
+	   
+   }
 }
