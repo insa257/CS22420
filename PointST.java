@@ -119,7 +119,7 @@ public class PointST<Value>
 	{
 		// Corner case
 		if (rect == null) 
-            throw new NullPointerException("Argument cannot be null");
+            throw new NullPointerException("Argument to range() is null\n");
 
 		// Find boundaries of rectangle
         double xmin = rect.xmin();
@@ -154,7 +154,7 @@ public class PointST<Value>
 	{
 		// Corner case
         if (p == null) 
-            throw new NullPointerException("Argument cannot be null");
+            throw new NullPointerException("Argument to nearest() is null");
 
         // Return null if symbol table is empty
         if (points.isEmpty()) 
