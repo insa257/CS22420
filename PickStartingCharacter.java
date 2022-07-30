@@ -23,7 +23,7 @@ import java.awt.event.ActionEvent;
 
 public class PickStartingCharacter extends JFrame
 {
-
+	static String seed = "";
 	private JPanel contentPane;
 
 	/**
@@ -88,11 +88,24 @@ public class PickStartingCharacter extends JFrame
 		comboBox.setBounds(255, 86, 102, 22);
 		layeredPane.add(comboBox);
 		
+		ActionListener actionListener = new ActionListener() {
+		      public void actionPerformed(ActionEvent actionEvent) {
+		    	  seed = (String) comboBox.getSelectedItem();
+		      }
+		    };
+		    comboBox.addActionListener(actionListener);
+		
 		JLabel lblNewLabel_2 = new JLabel("SUGGESTION");
 		lblNewLabel_2.setBounds(10, 64, 73, 14);
 		layeredPane.add(lblNewLabel_2);
 		
 		JButton btnNewButton = new JButton("KEVIN BACON");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				seed = "Kevin Bacon";
+			}
+		});
 		btnNewButton.setBounds(47, 86, 108, 23);
 		layeredPane.add(btnNewButton);
 		

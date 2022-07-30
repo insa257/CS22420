@@ -51,7 +51,11 @@ public class KevinBaconNumber extends JFrame
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
 		
-		JLabel lblNewLabel = new JLabel("ACTOR 1 and ACTOR 2 have a kevin bacon number of X");
+		BaconGame game = new BaconGame(PickStartingCharacter.seed,PickEndingCharacter.destination);
+		Iterable<String> bNum = game.getPath(PickStartingCharacter.seed,PickEndingCharacter.destination);
+		
+		
+		JLabel lblNewLabel = new JLabel(PickStartingCharacter.seed + " and " + PickEndingCharacter.destination + " have a kevin bacon number of " + game.getBaconNumber() );
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setBounds(10, 111, 418, 28);

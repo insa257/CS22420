@@ -23,7 +23,7 @@ import java.awt.event.ActionEvent;
 
 public class PickEndingCharacter extends JFrame
 {
-
+	static String destination = "";
 	private JPanel contentPane;
 
 	/**
@@ -87,6 +87,13 @@ public class PickEndingCharacter extends JFrame
 		comboBox.setEditable(true);
 		comboBox.setBounds(255, 86, 102, 22);
 		layeredPane.add(comboBox);
+		ActionListener actionListener = new ActionListener() {
+		      public void actionPerformed(ActionEvent actionEvent) {
+		    	  destination = (String) comboBox.getSelectedItem();
+		      }
+		    };
+		    comboBox.addActionListener(actionListener);
+		
 		
 		JLabel lblNewLabel_2 = new JLabel("SUGGESTION");
 		lblNewLabel_2.setBounds(10, 64, 73, 14);
@@ -99,7 +106,7 @@ public class PickEndingCharacter extends JFrame
 		JLabel lblNewLabel_3 = new JLabel("PICK AN OPTION OR TYPE YOUR OWN");
 		lblNewLabel_3.setBounds(159, 64, 198, 14);
 		layeredPane.add(lblNewLabel_3);
-		
+
 		JButton btnNewButton_1 = new JButton("Next");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
