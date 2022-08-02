@@ -4,22 +4,37 @@ import edu.princeton.cs.algs4.BreadthFirstPaths;
 import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.StdOut;
 
+/**
+ * Creates a BaconGraph and runs the breadth first search to find the shortest path between
+ * a seed and a destination. It also determines the number of vertices between the seed and the destination,
+ * known as the Bacon number.
+ * 
+ * @author insanorcross
+ *
+ */
 public class BaconGame 
 {
 	// Fields 
-	int baconNumber;
-	BaconGraph graph = new BaconGraph();
-	String seed, destination;
+	private BaconGraph graph = new BaconGraph();
+	private String seed, destination;
 	
 	// Constructor
-	public BaconGame(String seed, String destination)
+	public BaconGame(BaconGraph graph, String seed, String destination)
 	{
+		this.graph = graph;
 		this.seed = seed;
 		this.destination = destination;
 		
 	}
 	
-	// Auxiliary functions
+	/**
+	 *  Conducts a breadth first search to find the shortest path from the seed to the destination. The path is returned 
+	 *  as a queue in seed - movie - actor - ... - destination format.
+	 *  
+	 * @param seed - starting point of the bfs search
+	 * @param destination - end point of the bfs search
+	 * @return A queue of strings 
+	 */
 	public Queue<String> getPath(String seed, String destination)
 	{
 		BreadthFirstPaths bfp = new BreadthFirstPaths(graph.graph(), graph.indexOfActor(seed));
@@ -48,29 +63,22 @@ public class BaconGame
 		return path;
 	}
 	
-	public Queue<String> getMoviePath(Queue<String> actors)
-	{
-		//Queue<String> temp = actors
-		if (actors == null)
-			return null;
-		
-		Queue<String> movies = new Queue<String>();		
-		while (actors.size() > 1)
-		{
-			String current = actors.dequeue();
-			String next = actors.peek();
-			movies.enqueue(this.graph().getEdge(this.graph().indexOfActor(current), this.graph().indexOfActor(next)));			
-		}
-		
-		return movies;
-	}
-	
+	/**
+	 * Finds and returns the distance between the seed and destination along the shortest path.
+	 * 
+	 * @return Bacon number
+	 */
 	public int getBaconNumber()
 	{
 		BreadthFirstPaths bfp = new BreadthFirstPaths(graph.graph(), graph.indexOfActor(seed));
 		return bfp.distTo(graph.indexOfActor(destination));
 	}
 	
+	/** 
+	 * Returns the graph built from the input files.
+	 * 
+	 * @return BaconGraph
+	 */
 	public BaconGraph graph()
 	{
 		return graph;
@@ -82,7 +90,8 @@ public class BaconGame
 		
 		String source = "Kevin Bacon"; // Change to get from user later
 		String destination = "Lisa Kudrow"; // Change to get from user later
-		BaconGame game = new BaconGame(source, destination);
+		BaconGraph graph = new BaconGraph();
+		BaconGame game = new BaconGame(graph, source, destination);
 		
 		// Find path
 		Queue<String> path = game.getPath(source, destination);
@@ -93,6 +102,7 @@ public class BaconGame
 		}
 		StdOut.println();
 		
+		// Find Bacon number
 		StdOut.println("Bacon number: " + game.getBaconNumber());
 	}
 
