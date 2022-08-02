@@ -19,9 +19,8 @@ public class BaconGame
 	private String seed, destination;
 	
 	// Constructor
-	public BaconGame(BaconGraph graph, String seed, String destination)
+	public BaconGame(String seed, String destination)
 	{
-		this.graph = graph;
 		this.seed = seed;
 		this.destination = destination;
 		
