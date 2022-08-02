@@ -6,7 +6,11 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import edu.princeton.cs.algs4.Queue;
+
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 
 import javax.swing.JScrollPane;
@@ -25,6 +29,7 @@ public class PickEndingCharacter extends JFrame
 {
 	static String destination = "";
 	private JPanel contentPane;
+	static ErrorScreen error = new ErrorScreen();
 
 	/**
 	 * Launch the application.
@@ -52,6 +57,8 @@ public class PickEndingCharacter extends JFrame
 	 */
 	public PickEndingCharacter()
 	{
+		Toolkit.getDefaultToolkit().setDynamicLayout(true);
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
@@ -79,7 +86,7 @@ public class PickEndingCharacter extends JFrame
 		
 		String[] actorExamples = {
 			null,	
-			"Mila Kunis",
+			"Tom Hanks",
 			"Jennifer Anniston",
 			"Vince Vaughn"
 		};
@@ -88,31 +95,40 @@ public class PickEndingCharacter extends JFrame
 		comboBox.setBounds(255, 86, 102, 22);
 		layeredPane.add(comboBox);
 		ActionListener actionListener = new ActionListener() {
-		      public void actionPerformed(ActionEvent actionEvent) {
+		      public void actionPerformed(ActionEvent actionEvent) 
+		      {
 		    	  destination = (String) comboBox.getSelectedItem();
 		      }
 		    };
 		    comboBox.addActionListener(actionListener);
 		
 		
-		JLabel lblNewLabel_2 = new JLabel("SUGGESTION");
-		lblNewLabel_2.setBounds(10, 64, 73, 14);
+		JLabel lblNewLabel_2 = new JLabel("<html>"+"SUGGESTION"+ "</html>");
+		lblNewLabel_2.setBounds(10, 48, 94, 30);
 		layeredPane.add(lblNewLabel_2);
 		
 		JButton btnNewButton = new JButton("TOM CRUISE");
 		btnNewButton.setBounds(47, 86, 108, 23);
 		layeredPane.add(btnNewButton);
 		
-		JLabel lblNewLabel_3 = new JLabel("PICK AN OPTION OR TYPE YOUR OWN");
-		lblNewLabel_3.setBounds(159, 64, 198, 14);
+		JLabel lblNewLabel_3 = new JLabel("<html>"+ "PICK AN OPTION OR TYPE YOUR OWN" + "</html>");
+		lblNewLabel_3.setBounds(159, 48, 198, 30);
 		layeredPane.add(lblNewLabel_3);
 
 		JButton btnNewButton_1 = new JButton("Next");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{
-				KevinBaconNumber number = new KevinBaconNumber();
-				number.setVisible(true);
+				try
+				{
+					KevinBaconNumber number = new KevinBaconNumber();
+					number.setVisible(true);
+				} catch (Exception e2)
+				{
+					
+					 error.setVisible(true);
+					 error.setAlwaysOnTop(true);
+				}
 			}
 		});
 		btnNewButton_1.setBounds(138, 137, 89, 23);

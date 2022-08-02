@@ -7,6 +7,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.GridBagLayout;
+import java.awt.Toolkit;
+
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
@@ -48,6 +50,10 @@ public class KevinBaconStartPage extends JFrame
 	 */
 	public KevinBaconStartPage()
 	{
+		LoadingScreen load = new LoadingScreen();
+		load.setVisible(true);
+		Toolkit.getDefaultToolkit().setDynamicLayout(true);
+		PickEndingCharacter.error.setAlwaysOnTop(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
@@ -86,7 +92,7 @@ public class KevinBaconStartPage extends JFrame
 		btnNewButton.setBounds(255, 199, 89, 23);
 		contentPane.add(btnNewButton);
 		
-		JLabel lblNewLabel_3 = new JLabel("PRESS START TO CONTINUE");
+		JLabel lblNewLabel_3 = new JLabel("<html>"+ "PRESS START TO CONTINUE" + "</html>");
 		lblNewLabel_3.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel_3.setBounds(50, 203, 174, 14);
 		contentPane.add(lblNewLabel_3);

@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionListener;
 
 import javax.swing.JScrollPane;
@@ -52,6 +53,11 @@ public class PickStartingCharacter extends JFrame
 	 */
 	public PickStartingCharacter()
 	{
+		//KevinBaconNumber.error.setOnTop(false);
+		 
+		Toolkit.getDefaultToolkit().setDynamicLayout(true);
+//		LoadingScreen startScreen = new LoadingScreen();
+//		startScreen.setVisible(true);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		contentPane = new JPanel();
